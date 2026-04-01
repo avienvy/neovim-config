@@ -50,11 +50,36 @@ require("lazy").setup({
   spec = {
     -- add your plugins here
     {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    "nvim-mini/mini.statusline",
+    version = false,
+    config = function()
+        require('mini.statusline').setup({})
+    end,
+    },
+    {
+    "stevearc/oil.nvim",
+    opts = {}, 
+    keys = {
+       { "-", "<CMD>Oil<CR>", desc = "Open parent directory" },
+    },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    },
+    {
+    'stevearc/oil.nvim',
+    opts = {},
+    dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+    lazy = false,
+    },
+    {
+    "sainnhe/gruvbox-material",
+    lazy = false,
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme("catppuccin-frappe")
+      vim.g.gruvbox_material_background = 'soft'
+      vim.g.gruvbox_material_foreground = 'material' -- alternative: 'mix' or 'original'
+      vim.g.gruvbox_material_better_performance = 1
+      vim.g.gruvbox_material_enable_italic = 1
+    vim.cmd([[colorscheme gruvbox-material]])
     end,
     },
     {
