@@ -7,6 +7,8 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
 vim.opt.scrolloff = 9
+vim.opt.mouse = ""
+vim.opt.guicursor = ""
 vim.opt.listchars = { space = "", eol = "", tab = ">-", trail = "-", extends = "~", precedes = "~", conceal = "+", nbsp = "&" }
 -- Jump out of brackets with Tab in Insert Mode
 vim.keymap.set('i', '<Tab>', function()
@@ -60,7 +62,20 @@ require("lazy").setup({
     event = "InsertEnter",
     config = true
     },
-
+    {
+    "vyfor/cord.nvim",
+    opts = {
+    text = {
+        workspace = '',
+        editing = function(opts)
+          return string.format("Editing %s [Line: %s]", opts.filename, opts.cursor_line, opts.cursor_column)
+        end,
+      },
+      timer = {
+        interval = 1500,
+        },
+      },
+    }
   },
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
@@ -68,4 +83,3 @@ require("lazy").setup({
   -- automatically check for plugin updates
   checker = { enabled = true },
 })
-
