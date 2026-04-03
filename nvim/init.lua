@@ -9,6 +9,7 @@ vim.opt.softtabstop = 4
 vim.opt.scrolloff = 9
 vim.opt.mouse = ""
 vim.opt.guicursor = ""
+vim.opt.termguicolors = true
 vim.opt.listchars = { space = "", eol = "", tab = ">-", trail = "-", extends = "~", precedes = "~", conceal = "+", nbsp = "&" }
 -- Jump out of brackets with Tab in Insert Mode
 vim.keymap.set('i', '<Tab>', function()
@@ -20,7 +21,21 @@ vim.keymap.set('i', '<Tab>', function()
   end
   return '<Tab>'
 end, { expr = true })
-
+-- hlslens config
+local kopts = {noremap = true, silent = true}
+vim.api.nvim_set_keymap('n', 'n',
+    [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
+    kopts)
+vim.api.nvim_set_keymap('n', 'N',
+    [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
+    kopts)
+vim.api.nvim_set_keymap('n', '*', [[*<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', '#', [[#<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', 'g*', [[g*<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', 'g#', [[g#<Cmd>lua require('hlslens').start()<CR>]], kopts)
+vim.api.nvim_set_keymap('n', '<Leader>l', '<Cmd>noh<CR>', kopts)
+-- term
+vim.keymap.set('n', ',v', '<cmd>lua open_venv_terminal()<CR>', { desc = "Open Terminal with CWD venv" })
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -45,10 +60,52 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+--term
+
+function _G.open_venv_terminal()
+    local cwd = vim.fn.getcwd()
+    local venv_activate = cwd .. "/.venv/bin/activate.fish"
+    if vim.fn.filereadable(venv_activate) == 1 then
+        local toggle_cmd = string.format(
+            'ToggleTerm direction=horizontal dir=%s cmd="source %s"',
+            cwd,
+            venv_activate
+        )
+        vim.cmd(toggle_cmd)
+        vim.cmd('stopinsert') -- Exit any previous mode
+    else
+        print('Error: .venv/bin/activate.fish not found in ' .. cwd)
+        vim.cmd('ToggleTerm direction=horizontal')
+    end
+end
+
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
     -- add your plugins here
+    {
+    "linux-cultist/venv-selector.nvim",
+    },
+    {
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    config = true,
+    },
+    {
+    "kevinhwang91/nvim-hlslens",
+    opts = {},
+    },
+    {
+    "levouh/tint.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("tint").setup({
+        tint = -45, 
+        saturation = 0.5, 
+        highlight_ignore_patterns = { "WinSeparator", "StatusLine" }, 
+      })
+    end,
+    },
     {
     "nvim-mini/mini.statusline",
     version = false,
