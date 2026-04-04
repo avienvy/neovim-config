@@ -63,20 +63,20 @@ vim.g.maplocalleader = "\\"
 --term
 
 function _G.open_venv_terminal()
-    local cwd = vim.fn.getcwd()
-    local venv_activate = cwd .. "/.venv/bin/activate.fish"
-    if vim.fn.filereadable(venv_activate) == 1 then
-        local toggle_cmd = string.format(
-            'ToggleTerm direction=horizontal dir=%s cmd="source %s"',
-            cwd,
-            venv_activate
-        )
-        vim.cmd(toggle_cmd)
-        vim.cmd('stopinsert') -- Exit any previous mode
-    else
-        print('Error: .venv/bin/activate.fish not found in ' .. cwd)
-        vim.cmd('ToggleTerm direction=horizontal')
-    end
+  local cwd = vim.fn.getcwd()
+  local venv_activate = cwd .. "/.venv/bin/activate.fish"
+  if vim.fn.filereadable(venv_activate) == 1 then
+    local toggle_cmd = string.format(
+      "ToggleTerm direction=horizontal dir=%s cmd='fish -i -C \"source %s\"'",
+      cwd,
+      venv_activate
+    )
+    vim.cmd(toggle_cmd)
+    vim.cmd("stopinsert")
+  else
+    print("Error: .venv/bin/activate.fish not found in " .. cwd)
+    vim.cmd("ToggleTerm direction=horizontal")
+  end
 end
 
 -- Setup lazy.nvim
@@ -165,3 +165,7 @@ require("lazy").setup({
   -- automatically check for plugin updates
   checker = { enabled = true },
 })
+
+require("toggleterm").setup{
+  shell = "fish --private"
+}
